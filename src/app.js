@@ -18,6 +18,9 @@ const s3 = new S3Client({
 // CloudFront URL 생성 함수
 const getCloudFrontUrl = (s3Key) => {
   const cloudFrontDomain = process.env.CLOUDFRONT_DOMAIN;
+  if (!cloudFrontDomain) {
+    throw new Error("CLOUDFRONT_DOMAIN is not set");
+  }
   return `https://${cloudFrontDomain}/${s3Key}`;
 };
 
