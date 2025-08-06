@@ -15,6 +15,12 @@ const s3 = new S3Client({
   },
 });
 
+// CloudFront URL 생성 함수
+const getCloudFrontUrl = (s3Key) => {
+  const cloudFrontDomain = process.env.CLOUDFRONT_DOMAIN;
+  return `https://${cloudFrontDomain}/${s3Key}`;
+};
+
 const upload = multer({
   storage: multerS3({
     s3: s3,
@@ -33,15 +39,17 @@ app
   })
   .post(upload.single("photo"), async (req, res) => {
     const { date, content } = req.body;
-    const { location } = req.file;
+    const { key } = req.file;
+    const photoUrl = getCloudFrontUrl(key);
+
     const diary = await prisma.diaryEntry.create({
       data: {
         date: new Date(date),
         content,
-        photoUrl: location,
+        photoUrl,
       },
     });
-    res.json(req.file);
+    res.json(diary);
   });
 
 app.listen(3000, () => {
