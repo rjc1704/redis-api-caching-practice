@@ -31,10 +31,10 @@ export const cacheMiddleware = (ttl = 300) => {
 
       // Redis에서 캐시된 데이터 확인
       const cachedData = await redis.get(cacheKey);
+      console.log("cachedData 여부", !!cachedData);
 
       if (cachedData) {
         // 캐시된 데이터가 있으면 반환
-        console.log("cachedData 여부", !!cachedData);
         const parsedData = JSON.parse(cachedData);
         return res.status(200).json(parsedData);
       }
