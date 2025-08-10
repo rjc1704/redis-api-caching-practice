@@ -3,6 +3,10 @@ import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import { S3Client } from "@aws-sdk/client-s3";
 import multerS3 from "multer-s3";
+import {
+  cacheMiddleware,
+  invalidateCache,
+} from "./middlewares/cacheMiddleware.js";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -36,24 +40,28 @@ const upload = multer({
 
 app
   .route("/")
-  .get(async (req, res) => {
+  .get(cacheMiddleware(300), async (req, res) => {
     const diaryEntries = await prisma.diaryEntry.findMany();
     return res.status(200).json(diaryEntries);
   })
-  .post(upload.single("photo"), async (req, res) => {
-    const { date, content } = req.body;
-    const { key } = req.file;
-    const photoUrl = getCloudFrontUrl(key);
+  .post(
+    invalidateCache("cache:*"),
+    upload.single("photo"),
+    async (req, res) => {
+      const { date, content } = req.body;
+      const { key } = req.file;
+      const photoUrl = getCloudFrontUrl(key);
 
-    const diary = await prisma.diaryEntry.create({
-      data: {
-        date: new Date(date),
-        content,
-        photoUrl,
-      },
-    });
-    res.json(diary);
-  });
+      const diary = await prisma.diaryEntry.create({
+        data: {
+          date: new Date(date),
+          content,
+          photoUrl,
+        },
+      });
+      res.json(diary);
+    },
+  );
 
 app.listen(3000, () => {
   console.log("Server is listening on port 3000");
