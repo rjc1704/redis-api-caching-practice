@@ -1,4 +1,5 @@
 import Redis from "ioredis";
+import "dotenv/config";
 
 // Redis 클라이언트 생성
 const redis = new Redis({
