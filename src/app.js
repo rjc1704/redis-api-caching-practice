@@ -7,6 +7,8 @@ import {
   cacheMiddleware,
   invalidateCache,
 } from "./middlewares/cacheMiddleware.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
@@ -27,6 +29,7 @@ const getCloudFrontUrl = (s3Key) => {
   }
   return `https://${cloudFrontDomain}/${s3Key}`;
 };
+console.log("bucket name:", process.env.AWS_BUCKET_NAME);
 
 const upload = multer({
   storage: multerS3({
