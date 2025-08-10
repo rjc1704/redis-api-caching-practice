@@ -1,8 +1,8 @@
-GET http://localhost:3000/
+GET http://43.201.78.163:3000/
 
 ###
 
-POST http://localhost:3000/
+POST http://43.201.78.163:3000/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
