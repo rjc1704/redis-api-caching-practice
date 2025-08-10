@@ -47,7 +47,7 @@ app
     return res.status(200).json(diaryEntries);
   })
   .post(
-    invalidateCache("cache:*"),
+    invalidateCache("diary:*"),
     upload.single("photo"),
     async (req, res) => {
       const { date, content } = req.body;
