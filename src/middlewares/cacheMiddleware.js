@@ -58,25 +58,25 @@ export const cacheMiddleware = (ttl = 300) => {
   };
 };
 
-// 캐시 무효화 미들웨어 함수 (패턴을 매개변수로 받음)
-export const invalidateCache = (pattern = "cache:*") => {
+// 캐시 무효화 미들웨어 함수 (특정 URL만 무효화)
+export const invalidateCache = (url = null) => {
   return async (req, res, next) => {
     try {
-      // 패턴에 맞는 모든 캐시 키 찾기
-      const keys = await redis.keys(pattern);
-
-      if (keys.length > 0) {
-        // 찾은 키들을 모두 삭제
-        await redis.del(...keys);
-        console.log(
-          `Invalidated ${keys.length} cache entries with pattern: ${pattern}`,
-        );
+      if (url) {
+        // 특정 URL의 캐시만 삭제
+        const cacheKey = `cache:${url}`;
+        await redis.del(cacheKey);
+        console.log(`Invalidated cache for: ${cacheKey}`);
+      } else {
+        // 현재 요청 URL의 캐시 삭제
+        const cacheKey = `cache:${req.originalUrl}`;
+        await redis.del(cacheKey);
+        console.log(`Invalidated cache for: ${cacheKey}`);
       }
 
       next();
     } catch (error) {
       console.error("Cache invalidation error:", error);
-      // Redis 에러가 발생해도 애플리케이션은 계속 동작하도록 next() 호출
       next();
     }
   };

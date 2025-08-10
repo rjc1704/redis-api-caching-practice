@@ -46,24 +46,20 @@ app
     const diaryEntries = await prisma.diaryEntry.findMany();
     return res.status(200).json(diaryEntries);
   })
-  .post(
-    invalidateCache("diary:*"),
-    upload.single("photo"),
-    async (req, res) => {
-      const { date, content } = req.body;
-      const { key } = req.file;
-      const photoUrl = getCloudFrontUrl(key);
+  .post(invalidateCache(), upload.single("photo"), async (req, res) => {
+    const { date, content } = req.body;
+    const { key } = req.file;
+    const photoUrl = getCloudFrontUrl(key);
 
-      const diary = await prisma.diaryEntry.create({
-        data: {
-          date: new Date(date),
-          content,
-          photoUrl,
-        },
-      });
-      res.json(diary);
-    },
-  );
+    const diary = await prisma.diaryEntry.create({
+      data: {
+        date: new Date(date),
+        content,
+        photoUrl,
+      },
+    });
+    res.json(diary);
+  });
 
 app.listen(3000, () => {
   console.log("Server is listening on port 3000");
