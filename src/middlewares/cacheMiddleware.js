@@ -24,10 +24,10 @@ redis.on("error", (err) => {
 });
 
 // 캐시 미들웨어 함수 (TTL을 매개변수로 받음)
-export const cacheMiddleware = (ttl = 300, routerName = "diary") => {
+export const cacheMiddleware = (ttl = 300) => {
   return async (req, res, next) => {
     try {
-      const cacheKey = `${routerName}:${req.originalUrl}`;
+      const cacheKey = `cache:${req.originalUrl}`;
 
       // Redis에서 캐시된 데이터 확인
       const cachedData = await redis.get(cacheKey);
@@ -59,7 +59,7 @@ export const cacheMiddleware = (ttl = 300, routerName = "diary") => {
 };
 
 // 캐시 무효화 미들웨어 함수 (패턴을 매개변수로 받음)
-export const invalidateCache = (pattern = "diary:*") => {
+export const invalidateCache = (pattern = "cache:*") => {
   return async (req, res, next) => {
     try {
       // 패턴에 맞는 모든 캐시 키 찾기
