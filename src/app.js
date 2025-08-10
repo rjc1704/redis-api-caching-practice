@@ -7,8 +7,7 @@ import {
   cacheMiddleware,
   invalidateCache,
 } from "./middlewares/cacheMiddleware.js";
-import dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 
 const app = express();
 const prisma = new PrismaClient();
